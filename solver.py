@@ -15,8 +15,19 @@ def find_blank(state):
         for j in range(len(state[0])):
             if state[i][j] == 0:
                 return i, j
-def solve():
-    print("Solving the 8-puzzle!")
 
-if __name__ == "__main__":
-    solve()
+def expand(node):
+    # Trying expansion, but accidentally modifying original state
+    directions = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
+    blank_i, blank_j = find_blank(node.state)
+    size = len(node.state)
+    children = []
+
+    for move, (di, dj) in directions.items():
+        ni, nj = blank_i + di, blank_j + dj
+        if 0 <= ni < size and 0 <= nj < size:
+            # BUG: Modifies node.state directly (should deep copy)
+            node.state[blank_i][blank_j], node.state[ni][nj] = node.state[ni][nj], node.state[blank_i][blank_j]
+            children.append(Node(node.state, parent=node, action=move, cost=node.cost + 1, depth=node.depth + 1))
+
+    return children
