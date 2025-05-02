@@ -1,4 +1,6 @@
 
+
+import heapq
 class Node:
     def __init__(self, state, parent=None, action=None, cost=0, depth=0):
         self.state = state
@@ -43,4 +45,18 @@ def manhattan_heuristic(state, goal):
     return sum(abs(pos[val][0] - i) + abs(pos[val][1] - j)
                for i in range(len(state)) for j in range(len(state[0]))
                if (val := state[i][j]) != 0)
+
+
+def run_search(initial_state, heuristic, goal_state):
+    start = Node(initial_state)
+    queue = [(start.cost, start)]
+    while queue:
+        _, node = heapq.heappop(queue)
+        if goal_reached(node.state, goal_state):
+            return node
+        for child in expand(node):
+            h = heuristic(child.state, goal_state)
+            child.cost = child.depth + h
+            heapq.heappush(queue, (child.cost, child))
+
 
