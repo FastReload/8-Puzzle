@@ -25,9 +25,11 @@ def expand(node):
     for move, (di, dj) in directions.items():
         ni, nj = blank_i + di, blank_j + dj
         if 0 <= ni < size and 0 <= nj < size:
-            node.state[blank_i][blank_j], node.state[ni][nj] = node.state[ni][nj], node.state[blank_i][blank_j]
-            children.append(Node(node.state, parent=node, action=move, cost=node.cost + 1, depth=node.depth + 1))
+            new_state = [row[:] for row in node.state]
+            new_state[blank_i][blank_j], new_state[ni][nj] = new_state[ni][nj], new_state[blank_i][blank_j]
+            children.append(Node(new_state, parent=node, action=move, cost=node.cost + 1, depth=node.depth + 1))
 
     return children
+
 
 
