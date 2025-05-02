@@ -31,5 +31,16 @@ def expand(node):
 
     return children
 
+def goal_reached(state, goal):
+    return state == goal
 
+def misplaced_count(state, goal):
+    return sum(1 for i in range(len(state)) for j in range(len(state[0]))
+               if state[i][j] != 0 and state[i][j] != goal[i][j])
+
+def manhattan_heuristic(state, goal):
+    pos = {goal[i][j]: (i, j) for i in range(len(goal)) for j in range(len(goal[0]))}
+    return sum(abs(pos[val][0] - i) + abs(pos[val][1] - j)
+               for i in range(len(state)) for j in range(len(state[0]))
+               if (val := state[i][j]) != 0)
 
