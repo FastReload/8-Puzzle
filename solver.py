@@ -1,105 +1,205 @@
 
 
-import heapq
+import heapq  # priority queue (min-heap) for selecting next best node
 
+# Represents a single configuration/state in the search tree
 class Node:
     def __init__(self, state, parent=None, action=None, cost=0, depth=0):
-        self.state = state
-        self.parent = parent
-        self.action = action
-        self.cost = cost
-        self.depth = depth
+        self.state = state      # current puzzle state as a 2D list
+        self.parent = parent    # reference to parent node for backtracking
+        self.action = action    # move taken to reach this node ('up', 'down', etc.)
+        self.cost = cost        # f(n) = g(n) + h(n)
+        self.depth = depth      # g(n), depth from initial node
 
     def __lt__(self, other):
+        # Required for priority queue comparison
         return self.cost < other.cost
 
+# Finds position of blank tile (represented by 0)
 def find_blank(state):
     for i in range(len(state)):
         for j in range(len(state[0])):
             if state[i][j] == 0:
                 return i, j
+    raise Exception("No blank tile found!")
 
+# Generates valid child nodes by moving the blank tile in all possible directions
 def expand(node):
-    directions = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
-    x, y = find_blank(node.state)
-    size = len(node.state)
+    moves = {
+        'up': (-1, 0),
+        'down': (1, 0),
+        'left': (0, -1),
+        'right': (0, 1)
+    }
+
     children = []
-    for move, (dx, dy) in directions.items():
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < size and 0 <= ny < size:
-            new_state = [row[:] for row in node.state]
-            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
-            children.append(Node(new_state, node, move, node.cost + 1, node.depth + 1))
+    size = len(node.state)
+    blank_i, blank_j = find_blank(node.state)
+
+    for move, (di, dj) in moves.items():
+        new_i, new_j = blank_i + di, blank_j + dj
+        if 0 <= new_i < size and 0 <= new_j < size:
+            new_state = [row[:] for row in node.state]  # deep copy of state
+            # Swap blank with target tile
+            new_state[blank_i][blank_j], new_state[new_i][new_j] = new_state[new_i][new_j], new_state[blank_i][blank_j]
+            # Create new child node with updated state
+            child = Node(new_state, parent=node, action=move, cost=node.cost + 1, depth=node.depth + 1)
+            children.append(child)
+
     return children
 
+# Goal check: To determine if we need to go further or stop and print the result.
 def goal_reached(state, goal):
     return state == goal
 
+# Heuristic: counts number of misplaced tiles (excluding blank)
 def misplaced_count(state, goal):
-    return sum(1 for i in range(len(state)) for j in range(len(state[0])) if state[i][j] != 0 and state[i][j] != goal[i][j])
+    cnt = 0
+    for i in range(len(state)):
+        for j in range(len(state[0])):
+            if state[i][j] != 0 and state[i][j] != goal[i][j]:
+                cnt += 1
+    return cnt
 
-def manhattan_heuristic(state, goal):
-    pos = {goal[i][j]: (i, j) for i in range(len(goal)) for j in range(len(goal[0]))}
-    return sum(abs(pos[val][0] - i) + abs(pos[val][1] - j)
-               for i in range(len(state)) for j in range(len(state[0]))
-               if (val := state[i][j]) != 0)
+# Heuristic: Manhattan distance for all tiles from their goal positions
+def manhattan(state, goal):
+    pos = {}
+    size = len(state)
+    # Build lookup for goal positions
+    for i in range(size):
+        for j in range(size):
+            pos[goal[i][j]] = (i, j)
 
+    dist = 0
+    for i in range(size):
+        for j in range(size):
+            val = state[i][j]
+            if val != 0:
+                goal_i, goal_j = pos[val]
+                dist += abs(goal_i - i) + abs(goal_j - j)
+    return dist
+
+# Core search algorithm: UCS or A* depending on heuristic
 def run_search(initial_state, heuristic, goal_state):
-    start = Node(initial_state)
-    queue = [(start.cost, start)]
-    explored = set()
-    nodes_expanded = 0
-    max_queue_size = 0
-    while queue:
-        max_queue_size = max(max_queue_size, len(queue))
-        _, node = heapq.heappop(queue)
+    # Create the initial node with the starting state
+    start_node = Node(initial_state)
+
+    # Priority queue (min-heap) for frontier; stores (cost, node) tuples
+    frontier = []
+    heapq.heappush(frontier, (start_node.cost, start_node))  # Push the initial node
+
+    explored = set()  # To keep track of visited states (avoid revisiting)
+
+    nodes_expanded = 0         # Counter for number of nodes expanded
+    max_queue_size = 0         # Tracks maximum size of the frontier at any point
+
+    # Begin search loop
+    while frontier:
+        # Update the record of the largest frontier size
+        max_queue_size = max(max_queue_size, len(frontier))
+
+        # Pop the node with the lowest f(n) = g(n) + h(n) from the queue
+        _, node = heapq.heappop(frontier)
+
+
         if goal_reached(node.state, goal_state):
+            print("---------------------------------------------------------------------")
             print("Goal state found!")
+            print("---------------------------------------------------------------------")
             print("Solution depth:", node.depth)
             print("Nodes expanded:", nodes_expanded)
             print("Max queue size:", max_queue_size)
             return node
+
         explored.add(str(node.state))
         nodes_expanded += 1
+
         for child in expand(node):
             if str(child.state) not in explored:
-                h = heuristic(child.state, goal_state)
-                child.cost = child.depth + h
-                heapq.heappush(queue, (child.cost, child))
+                h = heuristic(child.state, goal_state)        # Estimate cost to goal
+                child.cost = child.depth + h                 # f(n) = g(n) + h(n)
+                heapq.heappush(frontier, (child.cost, child))  # Add to frontier
 
-def get_solution_path(node):
+                # Print state expansion for visibility
+                print("The best state to expand with g(n) =", child.depth, "and h(n) =", h, "is:")
+                for row in child.state:
+                    print(row)
+                print()
+
+    return None  # No solution found
+
+# Traces back the solution path from goal to start
+def solution(node):
     path = []
-    while node:
+    while node is not None:
         path.append((node.action, node.state))
         node = node.parent
-    return path[::-1]
+    return path[::-1]  # return reversed path
 
-def make_default(size):
-    nums = list(range(1, size * size)) + [0]
-    return [nums[i * size: (i + 1) * size] for i in range(size)]
-
+# Helper to input puzzle state row by row
 def read_puzzle(size, msg):
     print(msg)
-    return [list(map(int, input("Row " + str(i + 1) + ": ").split())) for i in range(size)]
+    puzzle = []
+    for i in range(size):
+        print("Enter row", i + 1, ":")
+        row = list(map(int, input().split()))
+        puzzle.append(row)
+    return puzzle
 
+# Generates default goal for 8-puzzle or 15-puzzle
+def make_default(size):
+    nums = list(range(1, size * size)) + [0]
+    goal = []
+    for i in range(size):
+        goal.append(nums[i * size: (i + 1) * size])
+    return goal
+
+# Main execution flow
 if __name__ == '__main__':
-    SIZE = 3
-    goal_state = make_default(SIZE)
-    initial_state = read_puzzle(SIZE, "Enter initial state:")
-    print("Choose algorithm:
-1. UCS
-2. Misplaced
-3. Manhattan")
+    SIZE = 3  # Change this to make it a 15 or higher puzzle
+    print("---------------------------------------------------------------------")
+    print(f"Welcome to the {(SIZE**2) - 1}-Puzzle Solver!")
+    print("---------------------------------------------------------------------")
+    print("Puzzle size:", SIZE, "x", SIZE)
+
+    print("1. Use default goal state")
+    print("2. Enter custom goal state")
+    choice = input("Your choice: ").strip()
+
+    if choice == '1':
+        goal_state = make_default(SIZE)
+    else:
+        goal_state = read_puzzle(SIZE, "Enter goal state with a space after each number:")
+
+    initial_state = read_puzzle(SIZE, "Enter initial state with a space after each number:")
+
+    print("Choose an algorithm to solve the puzzle:")
+    print("1. Uniform Cost Search")
+    print("2. A* with Misplaced Tile")
+    print("3. A* with Manhattan Distance")
     algo = input("Your choice: ").strip()
+
     if algo == '1':
-        heuristic = lambda s, g: 0
+        heuristic = lambda s, g: 0  # UCS has h(n) = 0
     elif algo == '2':
         heuristic = misplaced_count
     else:
-        heuristic = manhattan_heuristic
+        heuristic = manhattan
+
+    print("---------------------------------------------------------------------")
+    print("Here’s the starting board:")
+    for row in initial_state:
+        print(row)
+    h_value = heuristic(initial_state, goal_state)
+    print("---------------------------------------------------------------------")
+    print("g(n) = 0", "h(n) =", h_value, "f(n) =", h_value)
+    print("---------------------------------------------------------------------")
+
     result = run_search(initial_state, heuristic, goal_state)
+
     if result:
-        for move, state in get_solution_path(result):
+        path = solution(result)
+        for move, state in path:
             if move:
                 print("Move:", move)
             for row in state:
@@ -107,5 +207,4 @@ if __name__ == '__main__':
             print()
     else:
         print("No solution found.")
-
 
