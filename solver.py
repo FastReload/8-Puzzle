@@ -1,5 +1,4 @@
 
-
 import heapq  # priority queue (min-heap) for selecting next best node
 
 # Represents a single configuration/state in the search tree
