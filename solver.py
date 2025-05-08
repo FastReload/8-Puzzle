@@ -1,6 +1,20 @@
 
 import heapq  # priority queue (min-heap) for selecting next best node
+import time          # For measuring time taken per puzzle run
+import tracemalloc   # For measuring memory usage
+import json          # For saving and loading run statistics
+import os            # For checking if the stats file already exists
 
+# Define the name of the file where stats will be saved
+stats_file = "stats.json"
+
+# If the stats file already exists, load existing stats into memory
+if os.path.exists(stats_file):
+    with open(stats_file, "r") as f:
+        stats = json.load(f)
+# If the file doesn't exist, start with an empty list of stats
+else:
+    stats = []
 # Represents a single configuration/state in the search tree
 class Node:
     def __init__(self, state, parent=None, action=None, cost=0, depth=0):
@@ -156,54 +170,109 @@ def make_default(size):
 # Main execution flow
 if __name__ == '__main__':
     SIZE = 3  # Change this to make it a 15 or higher puzzle
-    print("---------------------------------------------------------------------")
-    print(f"Welcome to the {(SIZE**2) - 1}-Puzzle Solver!")
-    print("---------------------------------------------------------------------")
-    print("Puzzle size:", SIZE, "x", SIZE)
+   # Display the puzzle header and size
+print("---------------------------------------------------------------------")
+print(f"Welcome to the {(SIZE**2) - 1}-Puzzle Solver!")
+print("---------------------------------------------------------------------")
+print("Puzzle size:", SIZE, "x", SIZE)
 
-    print("1. Use default goal state")
-    print("2. Enter custom goal state")
-    choice = input("Your choice: ").strip()
+# Ask user whether to use default or custom goal state
+print("1. Use default goal state")
+print("2. Enter custom goal state")
+choice = input("Your choice: ").strip()
 
-    if choice == '1':
-        goal_state = make_default(SIZE)
-    else:
-        goal_state = read_puzzle(SIZE, "Enter goal state with a space after each number:")
+# Set the goal state based on user input
+if choice == '1':
+    goal_state = make_default(SIZE)
+else:
+    goal_state = read_puzzle(SIZE, "Enter goal state with a space after each number:")
 
-    initial_state = read_puzzle(SIZE, "Enter initial state with a space after each number:")
+# Read the initial puzzle state from user
+initial_state = read_puzzle(SIZE, "Enter initial state with a space after each number:")
 
-    print("Choose an algorithm to solve the puzzle:")
-    print("1. Uniform Cost Search")
-    print("2. A* with Misplaced Tile")
-    print("3. A* with Manhattan Distance")
-    algo = input("Your choice: ").strip()
+# Prompt user to choose the search algorithm
+print("Choose an algorithm to solve the puzzle:")
+print("1. Uniform Cost Search")
+print("2. A* with Misplaced Tile")
+print("3. A* with Manhattan Distance")
+algo = input("Your choice: ").strip()
 
+# Assign the corresponding heuristic function
+if algo == '1':
+    heuristic = lambda s, g: 0  # UCS: no heuristic
+elif algo == '2':
+    heuristic = misplaced_count  # A* with misplaced tiles
+else:
+    heuristic = manhattan  # A* with Manhattan distance
+
+# Display the initial board and heuristic values
+print("---------------------------------------------------------------------")
+print("Here’s the starting board:")
+for row in initial_state:
+    print(row)
+h_value = heuristic(initial_state, goal_state)
+print("---------------------------------------------------------------------")
+print("g(n) = 0", "h(n) =", h_value, "f(n) =", h_value)
+print("---------------------------------------------------------------------")
+
+# Start measuring memory and time
+tracemalloc.start()
+start_time = time.time()
+
+# Run the selected search algorithm
+result = run_search(initial_state, heuristic, goal_state)
+
+# Stop time and memory tracking
+end_time = time.time()
+current, peak = tracemalloc.get_traced_memory()
+tracemalloc.stop()
+
+# Compute elapsed time and memory usage
+elapsed_time = end_time - start_time
+peak_kb = peak / 1024
+
+# Display performance metrics
+print("---------------------------------------------------------------------")
+print(f"Time taken: {elapsed_time:.4f} seconds")
+print(f"Peak memory used: {peak_kb:.2f} KB")
+print("---------------------------------------------------------------------")
+
+# If a solution was found, display the full path
+if result:
+    path = solution(result)
+    print(f"Total moves: {len(path)-1}")
+    for move, state in path:
+        if move:
+            print("Move:", move)
+        for row in state:
+            print(row)
+        print()
+
+    # Identify algorithm name for logging
     if algo == '1':
-        heuristic = lambda s, g: 0  # UCS has h(n) = 0
+        algo_name = "UCS"
     elif algo == '2':
-        heuristic = misplaced_count
+        algo_name = "A* (Misplaced Tile)"
     else:
-        heuristic = manhattan
+        algo_name = "A* (Manhattan Distance)"
 
-    print("---------------------------------------------------------------------")
-    print("Here’s the starting board:")
-    for row in initial_state:
-        print(row)
-    h_value = heuristic(initial_state, goal_state)
-    print("---------------------------------------------------------------------")
-    print("g(n) = 0", "h(n) =", h_value, "f(n) =", h_value)
-    print("---------------------------------------------------------------------")
+    # Store result for plotting/statistics
+    stats.append({
+    'algorithm': algo_name,
+    'depth': len(path) - 1 if result else None,
+    'time_sec': elapsed_time,
+    'memory_kb': peak_kb
+    })
 
-    result = run_search(initial_state, heuristic, goal_state)
+    # Save the updated stats list back to file
+    with open(stats_file, "w") as f:
+      json.dump(stats, f, indent=4)
 
-    if result:
-        path = solution(result)
-        for move, state in path:
-            if move:
-                print("Move:", move)
-            for row in state:
-                print(row)
-            print()
-    else:
-        print("No solution found.")
+
+print("
+================ Summary of Runs ================
+")
+for i, record in enumerate(stats, 1):
+    print(f"Run {i}: Algorithm: {record['algorithm']}, Depth: {record['depth']}, Time: {record['time_sec']:.4f}s, Memory: {record['memory_kb']:.2f}KB")
+
 
