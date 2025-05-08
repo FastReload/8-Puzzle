@@ -1,0 +1,74 @@
+[
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 2,
+        "time_sec": 0.0015153884887695312,
+        "memory_kb": 4.78515625
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 4,
+        "time_sec": 0.0031485557556152344,
+        "memory_kb": 8.822265625
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 6,
+        "time_sec": 0.0042476654052734375,
+        "memory_kb": 11.337890625
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 8,
+        "time_sec": 0.005982875823974609,
+        "memory_kb": 14.0078125
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 10,
+        "time_sec": 0.03831744194030762,
+        "memory_kb": 102.275390625
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 12,
+        "time_sec": 0.07027840614318848,
+        "memory_kb": 191.9453125
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 14,
+        "time_sec": 0.14387798309326172,
+        "memory_kb": 389.50390625
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 16,
+        "time_sec": 0.36188697814941406,
+        "memory_kb": 664.537109375
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 18,
+        "time_sec": 0.8875231742858887,
+        "memory_kb": 1507.48046875
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 20,
+        "time_sec": 4.051469087600708,
+        "memory_kb": 3785.8037109375
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 22,
+        "time_sec": 5.337565183639526,
+        "memory_kb": 6924.7958984375
+    },
+    {
+        "algorithm": "A* (Misplaced Tile)",
+        "depth": 24,
+        "time_sec": 13.228073120117188,
+        "memory_kb": 14616.2236328125
+    }
+]
