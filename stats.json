@@ -1,0 +1,74 @@
+[
+    {
+        "algorithm": "UCS",
+        "depth": 2,
+        "time_sec": 0.004010438919067383,
+        "memory_kb": 9.896484375
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 4,
+        "time_sec": 0.015065670013427734,
+        "memory_kb": 36.56640625
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 6,
+        "time_sec": 0.054094791412353516,
+        "memory_kb": 135.658203125
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 8,
+        "time_sec": 0.1806495189666748,
+        "memory_kb": 428.931640625
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 10,
+        "time_sec": 0.3592677116394043,
+        "memory_kb": 647.9912109375
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 12,
+        "time_sec": 1.5930719375610352,
+        "memory_kb": 2051.0498046875
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 14,
+        "time_sec": 3.629612445831299,
+        "memory_kb": 4116.501953125
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 16,
+        "time_sec": 9.831069231033325,
+        "memory_kb": 10865.6201171875
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 18,
+        "time_sec": 29.64542865753174,
+        "memory_kb": 32500.3515625
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 20,
+        "time_sec": 41.19291830062866,
+        "memory_kb": 42216.001953125
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 22,
+        "time_sec": 93.86127614974976,
+        "memory_kb": 84740.642578125
+    },
+    {
+        "algorithm": "UCS",
+        "depth": 24,
+        "time_sec": 151.18275713920593,
+        "memory_kb": 122756.0849609375
+    }
+]
