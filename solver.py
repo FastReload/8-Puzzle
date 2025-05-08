@@ -275,4 +275,3 @@ print("
 for i, record in enumerate(stats, 1):
     print(f"Run {i}: Algorithm: {record['algorithm']}, Depth: {record['depth']}, Time: {record['time_sec']:.4f}s, Memory: {record['memory_kb']:.2f}KB")
 
-
