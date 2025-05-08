@@ -1,0 +1,74 @@
+[
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 2,
+        "time_sec": 0.0031690597534179688,
+        "memory_kb": 4.78515625
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 4,
+        "time_sec": 0.00683903694152832,
+        "memory_kb": 8.822265625
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 6,
+        "time_sec": 0.005786895751953125,
+        "memory_kb": 12.32421875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 8,
+        "time_sec": 0.01248025894165039,
+        "memory_kb": 30.1875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 10,
+        "time_sec": 0.01465749740600586,
+        "memory_kb": 36.9013671875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 12,
+        "time_sec": 0.03046894073486328,
+        "memory_kb": 79.40625
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 14,
+        "time_sec": 0.06085777282714844,
+        "memory_kb": 156.0390625
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 16,
+        "time_sec": 0.1141653060913086,
+        "memory_kb": 287.5185546875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 18,
+        "time_sec": 0.18654537200927734,
+        "memory_kb": 499.06640625
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 20,
+        "time_sec": 0.257061243057251,
+        "memory_kb": 659.875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 22,
+        "time_sec": 0.706812858581543,
+        "memory_kb": 988.9794921875
+    },
+    {
+        "algorithm": "A* (Manhattan Distance)",
+        "depth": 24,
+        "time_sec": 0.7660465240478516,
+        "memory_kb": 1066.17578125
+    }
+]
